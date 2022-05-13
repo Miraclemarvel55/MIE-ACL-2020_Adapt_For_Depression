@@ -1,9 +1,7 @@
-from collections import defaultdict
 import json
 import glob
 import os
 
-saveDir = os.path.dirname(__file__)
 home_dir = os.path.expanduser("~")
 relative_base = "Tools/brat-1.3_Crunchy_Frog/data/depression_windows/{source}_windows/"
 relative_dir = {
@@ -39,7 +37,45 @@ def get_dialogue_dirs_2(source1_dir, sub_layers="*/*"):
 
 
 goal_types = ["dev", "test", "train"]
-windows_count = defaultdict(int)
+
+
+def detailLabel2formattedLabel(label_):
+    """
+    将标注时的不定层级的标签转为目标层级的标签
+    :param label_:
+    :return:
+    """
+    sep = ":"
+    split = "-"
+    if label_ not in label2info:
+        if label_ in example2class:
+            label_ = example2class[label_]
+    try:
+        slot, full_type, predecessors = label2info[label_]
+    except:
+        if label_ in ontology.keys():
+            slot, full_type, predecessors = label_, "其他", []
+        else:
+            raise
+    status = sep.join(["状态", "阳性"])
+    label = split.join([sep.join([slot, full_type]), status])
+    return label
+
+
+def ann2labels(ann):
+    labels = []
+    with open(ann, 'r') as f:
+        content = f.read().strip()
+    if content:
+        old_lines = content.splitlines()
+        for line in old_lines:
+            T_ix, value, mention = line.split("\t")
+            label_, start, end = value.split(" ")
+            label = detailLabel2formattedLabel(label_)
+            if label not in labels:
+                labels.append(label)
+    return labels
+
 for goal_type in goal_types:
     source_chunyu_dir = relative_dir[goal_type]["chunyu"]
     source_CMDD_dir = relative_dir[goal_type]["CMDD"]
@@ -50,6 +86,7 @@ for goal_type in goal_types:
     source2_dialogue_dirs = get_dialogue_dirs_2(
         source1_dir=source_CMDD_dir,
         sub_layers="*/*")
+    source2_dialogue_dirs = list()
     goal_dialogue_dirs = sorted(set(source1_dialogue_dirs + source2_dialogue_dirs))
 
     from ontology_generate import example_dict, ontology, example2class, label2info
@@ -75,36 +112,10 @@ for goal_type in goal_types:
                     continue
                 utterances = content_txt
             # process labels
-            labels = []
-            with open(ann, 'r') as f:
-                content = f.read().strip()
-            if content:
-                old_lines = content.splitlines()
-                for line in old_lines:
-                    T_ix, value, mention = line.split("\t")
-                    label_, start, end = value.split(" ")
-                    sep = ":"
-                    split = "-"
-                    if label_ not in label2info:
-                        if label_ in example2class:
-                            label_ = example2class[label_]
-                    try:
-                        slot, full_type, predecessors = label2info[label_]
-                    except:
-                        if label_ in ontology.keys():
-                            slot, full_type, predecessors = label_, "其他", []
-                        else:
-                            raise
-                    status = sep.join(["状态", "阳性"])
-                    label = split.join([sep.join([slot, full_type]), status])
-                    if label not in labels:
-                        labels.append(label)
+            labels = ann2labels(ann)
             window_info = {"utterances": utterances, "label": labels}
             dialogue_windows.append(window_info)
-            windows_count[goal_type] += 1
         if dialogue_windows:
             dialogues.append(dialogue_windows)
-    with open(os.path.join(saveDir, f"{goal_type}.json"), 'w', newline="\n") as f:
+    with open(f"{goal_type}.json", 'w', newline="\n") as f:
         json.dump(dialogues, f, ensure_ascii=False, indent=1)
-print(windows_count)
-print(f"abnormal_windows:count:{len(abnormal_windows)}")
