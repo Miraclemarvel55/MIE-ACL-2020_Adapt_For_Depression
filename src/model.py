@@ -83,8 +83,12 @@ class MIE:
                 cell_bw=cell_bw,
                 inputs=seqs,
                 sequence_length=seqs_lens,
+<<<<<<< HEAD
                 dtype=tf.float32,
                 time_major=False
+=======
+                dtype=tf.float32
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
             )
             hidden_states = tf.concat(hidden_states, -1)
             # [batch_size, max_len, num_units]
@@ -193,11 +197,17 @@ class MIE:
         raise NotImplementedError()
 
     def _create_sess(self):
+<<<<<<< HEAD
         gpu_options = tf.GPUOptions(allow_growth=True,per_process_gpu_memory_fraction = 0.95)
         config = tf.ConfigProto(gpu_options=gpu_options)
         # config = tf.ConfigProto()
         # config.gpu_options.per_process_gpu_memory_fraction = 1
         # config.gpu_options.allow_growth = True
+=======
+        config = tf.ConfigProto()
+        config.gpu_options.per_process_gpu_memory_fraction = 1
+        config.gpu_options.allow_growth = True
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
         self.sess = tf.Session(config=config)
         self.saver = tf.train.Saver()
 
@@ -294,7 +304,10 @@ class MIE:
                 windows_utts_batch, windows_utts_lens_batch, labels_batch = batch
                 true_batch_size = windows_utts_batch.shape[0]
                 window_size = windows_utts_batch.shape[1]
+<<<<<<< HEAD
                 assert windows_utts_lens_batch.max() <= windows_utts_batch.shape[-1]
+=======
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
                 self.sess.run(
                     [self.slots_train_op[j] for j in indexes],
                     feed_dict={
@@ -310,9 +323,13 @@ class MIE:
             pbar.close()
             lr *= decay
 
+<<<<<<< HEAD
             # train的evaluation 只用了tbatch_size*N个数，数量较少。
             # 所以效果主要看test和dev吧。train的结果作为一个监控就好了。
             train_prf = self.evaluate('train', tbatch_size*5, tbatch_size)
+=======
+            train_prf = self.evaluate('train', tbatch_size, tbatch_size)
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
             train_loss = self.compute_loss('train', tbatch_size, tbatch_size)
             dev_prf = self.evaluate('dev', batch_size=tbatch_size)
             dev_loss = self.compute_loss('dev', batch_size=tbatch_size)
@@ -345,9 +362,12 @@ class MIE:
 
     def _evaluate(self, pred_labels, gold_labels):
         def _add_ex_col(x):
+<<<<<<< HEAD
             # 添加了这么一列，如果有被标记为1的则col为0，没有也就是全0则col为1
             # 这一列似乎说明的是对有无标记的一个比较判断。
             # 意思应该是如果我预测为全0的话你也预测为全0那也是不错的。
+=======
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
             col = 1 - np.sum(x, -1).astype(np.bool).astype(np.float32)
             col = np.expand_dims(col, -1)
             x = np.concatenate([x, col], -1)
@@ -439,7 +459,10 @@ class MIE:
         slot_candidate_cs_dict = dict()
 
         for slot, _ in self.ontology.ontology_list:
+<<<<<<< HEAD
             # slot like "症状"
+=======
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
             utt_h, _ = self._encoder(
                 'utt_encoder',
                 pinyin.get(slot, format='strip'),
@@ -584,6 +607,7 @@ class MIE:
             # 当前slot的真实标签
             slot_gold_labels = self.labels[:, start: start + slot_value_num * status_num]
             self.slots_gold_labels.append(slot_gold_labels)
+<<<<<<< HEAD
     
             # 当前slot的loss
             # slot_loss = tf.nn.sigmoid_cross_entropy_with_logits(
@@ -594,6 +618,13 @@ class MIE:
                 logits=slot_pred_logits,
                 targets=slot_gold_labels,
                 pos_weight=2
+=======
+
+            # 当前slot的loss
+            slot_loss = tf.nn.sigmoid_cross_entropy_with_logits(
+                logits=slot_pred_logits,
+                labels=slot_gold_labels
+>>>>>>> f3661796db7249feb9c18d4d5832e1046f225cd9
             ) # [batch_size, status_num * slot_value_num]
             self.slots_loss.append(slot_loss)
 

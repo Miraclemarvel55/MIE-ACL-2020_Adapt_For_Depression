@@ -45,7 +45,7 @@ params = {
 # Initialize the model.
 model = MIE(data, ontology, params=params)
 # model = MIE(data, ontology, params=params, location=args.location)
-args.location = "model_files/MIE_pos_weight5"
+
 # Train the model.
 model.train(
     epoch_num=args.epoch_num,
