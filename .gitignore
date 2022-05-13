@@ -1,0 +1,8 @@
+model_files
+.idea
+data_dep/FullSchema.json
+data_dep/dev.json
+data_dep/example_dict.json
+data_dep/ontology.json
+data_dep/test.json
+data_dep/train.json

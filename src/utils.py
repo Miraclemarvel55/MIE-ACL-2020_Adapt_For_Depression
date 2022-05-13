@@ -1,7 +1,6 @@
 import numpy as np
 import json
 import random
-import pdb
 from math import ceil
 from tqdm import tqdm
 
@@ -138,7 +137,8 @@ class Ontology:
     def onto2ids(self):
         # max_len = max([max([len(slot) + len(value) + 1 for value in self.ontology_dict]) \
         #     for slot in self.ontology_dict])
-        max_len = 35
+        max_len = 70 + 1
+        length_set = set()
         slots_values = dict()
         slots_values_lens = dict()
         for slot in self.ontology_dict.keys():
@@ -150,6 +150,7 @@ class Ontology:
                         seq += example + ','
                     seq += ')'
                 length = len(seq)
+                length_set.add(length)
                 seq = self.dictionary.words2ids(seq, max_len)
                 try:
                     slots_values[slot].append(seq)
@@ -187,6 +188,7 @@ class Dictionary:
             self.emb_size = int(first_line.split(' ')[1])
             self.emb = []
             self.vocab_list = []
+            print("dictionary load:")
             for line in tqdm(f):
                 line_list = line.split(' ')
                 if line[0] == ' ':
@@ -312,11 +314,13 @@ class Data:
             'windows_utts_len': [],
             'labels': []
         }
+        length_set = set()
         for dialog in dialogs:
             for window in dialog:
+                length_set.add(max(map(len, window['utterances'])))
                 window_utts = window['utterances']
                 self.window_size = len(window_utts)
-                window_utts_len = [len(utt) for utt in window_utts]
+                window_utts_len = [min(len(utt), self.max_len) for utt in window_utts]
                 self.datasets[name]['windows_utts_len'].append(window_utts_len)
                 window_utts = [self.dictionary.words2ids(utt, self.max_len) \
                     for utt in window_utts]
