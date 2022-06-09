@@ -1,6 +1,8 @@
 import numpy as np
 from functools import partial
-
+        
+positive_only_f = lambda x:"阳性" in x
+drop_negative_f = lambda x:not "阴性" in x
 def _evaluate_count_empty(pred_labels, gold_labels):
     if len(pred_labels) == 0:
         pred_labels.add('empty')
@@ -130,6 +132,9 @@ def _dialog_eval(window_pred_labels_w, window_gold_labels_w, dialogs, count_empt
 
         dialog_pred_labels_w = set(map(func, dialog_pred_labels_w))
         dialog_gold_labels_w = set(map(func, dialog_gold_labels_w))
+        if drop_negative_f:
+            dialog_pred_labels_w = {label for label in dialog_pred_labels_w if drop_negative_f(label)}
+            dialog_gold_labels_w = {label for label in dialog_gold_labels_w if drop_negative_f(label)}
 
         p, r, f1 = _evaluate(dialog_pred_labels_w, dialog_gold_labels_w, count_empty)
         ps.append(p)

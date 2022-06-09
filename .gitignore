@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 data_dep/__pycache__/
 data_dep/*.json
 data_dep/*.csv
@@ -6,3 +7,13 @@ src/__pycache__/
 model_files/
 nohup.out
 data/
+=======
+model_files
+.idea
+data_dep/FullSchema.json
+data_dep/dev.json
+data_dep/example_dict.json
+data_dep/ontology.json
+data_dep/test.json
+data_dep/train.json
+>>>>>>> f6fb82b40a3b0898a79a2d3433da59d01ac4a59a

@@ -1,7 +1,16 @@
 numpy~=1.18.5
 tensorflow~=1.13.2
+// 支持TensorFlow1.x版本的gpu可以直接用conda安装
 //tensorflow-gpu=1.13.1
 //conda install tensorflow-gpu=1.13.1
+// 如果使用RTX30系列显卡，请使用如下安装TensorFlow-gpu版本。
+// 安装后tf.test.is_gpu虽然显示false，
+// 但是实际可以调用gpu,实际只占用了gpu内存，但是没有用gpu计算，倒是cpu计算的很满
+// python要求3.8.
+// pip install nvidia-pyindex
+// pip install nvidia-tensorflow[horovod]
+// 详情：https://github.com/NVIDIA/tensorflow#install
 pinyin~=0.4.0
 //pinyin by pip
+pip install pinyin~=0.4.0
 tqdm~=4.62.0

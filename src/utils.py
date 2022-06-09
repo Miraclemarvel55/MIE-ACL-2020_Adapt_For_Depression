@@ -188,6 +188,7 @@ class Dictionary:
             self.emb_size = int(first_line.split(' ')[1])
             self.emb = []
             self.vocab_list = []
+            print("dictionary load:")
             for line in tqdm(f):
                 line_list = line.split(' ')
                 if line[0] == ' ':
