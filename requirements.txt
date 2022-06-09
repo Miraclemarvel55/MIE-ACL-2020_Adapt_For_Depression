@@ -1,0 +1,7 @@
+numpy~=1.18.5
+tensorflow~=1.13.2
+//tensorflow-gpu=1.13.1
+//conda install tensorflow-gpu=1.13.1
+pinyin~=0.4.0
+//pinyin by pip
+tqdm~=4.62.0

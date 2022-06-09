@@ -1,0 +1,8 @@
+data_dep/__pycache__/
+data_dep/*.json
+data_dep/*.csv
+src/__pycache__/
+.idea/
+model_files/
+nohup.out
+data/
